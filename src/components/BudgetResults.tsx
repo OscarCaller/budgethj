@@ -1,3 +1,4 @@
+import React from "react";
 import { BudgetCategory } from "@/data/budgetCategories";
 import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
