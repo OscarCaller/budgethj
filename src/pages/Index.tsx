@@ -4,11 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import BudgetResults from "@/components/BudgetResults";
-import { budgetCategories } from "@/data/budgetCategories";
+import { budgetCategories, BudgetCategory } from "@/data/budgetCategories";
 
 const Index = () => {
   const [income, setIncome] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [categories, setCategories] = useState(budgetCategories);
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -27,6 +28,10 @@ const Index = () => {
     setShowResults(true);
   };
 
+  const handleCategoryUpdate = (updatedCategories: BudgetCategory[]) => {
+    setCategories(updatedCategories);
+  };
+
   return (
     <div className="min-h-screen bg-accent p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
@@ -35,7 +40,8 @@ const Index = () => {
             Budgetplanerare
           </h1>
           <p className="text-gray-600 mb-6">
-            Ange din månadsinkomst efter skatt för att få en rekommenderad budgetfördelning
+            Ange din månadsinkomst efter skatt för att få en rekommenderad budgetfördelning. 
+            Justera sedan fördelningen efter dina behov med hjälp av reglagen.
           </p>
           
           <form onSubmit={handleSubmit} className="max-w-md mx-auto">
@@ -58,7 +64,8 @@ const Index = () => {
         {showResults && (
           <BudgetResults
             income={Number(income.replace(/[^0-9]/g, ""))}
-            categories={budgetCategories}
+            categories={categories}
+            onCategoryUpdate={handleCategoryUpdate}
           />
         )}
       </div>
