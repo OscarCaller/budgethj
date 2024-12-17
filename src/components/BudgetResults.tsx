@@ -22,6 +22,10 @@ const BudgetResults = ({ income, categories: initialCategories, onCategoryUpdate
     }).format(amount);
   };
 
+  const totalAllocated = categories.reduce((sum, cat) => sum + cat.percentage, 0);
+  const remainingPercentage = 100 - totalAllocated;
+  const remainingAmount = (income * remainingPercentage) / 100;
+
   const handleSliderChange = (categoryName: string, newValue: number[]) => {
     const updatedCategories = categories.map(cat => {
       if (cat.name === categoryName) {
@@ -46,31 +50,43 @@ const BudgetResults = ({ income, categories: initialCategories, onCategoryUpdate
   };
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 animate-fadeIn">
-      {categories.map((category) => {
-        const amount = (income * category.percentage) / 100;
-        return (
-          <Card key={category.name} className="p-4 hover:shadow-lg transition-shadow">
-            <h3 className="font-semibold text-lg mb-2">{category.name}</h3>
-            <p className="text-2xl font-bold text-primary mb-2">
-              {formatCurrency(amount)}
-            </p>
-            <p className="text-sm text-gray-600 mb-4">{category.description}</p>
-            <div className="space-y-2">
-              <Slider
-                defaultValue={[category.percentage]}
-                max={category.maxPercentage || 100}
-                min={category.minPercentage || 0}
-                step={1}
-                onValueChange={(value) => handleSliderChange(category.name, value)}
-              />
-              <p className="text-sm font-semibold text-gray-500">
-                {category.percentage}% av inkomsten
+    <div className="space-y-6 animate-fadeIn">
+      <Card className="p-4 bg-primary/5">
+        <h3 className="font-semibold text-lg mb-2">Ofördelad Budget</h3>
+        <p className="text-2xl font-bold text-primary">
+          {formatCurrency(remainingAmount)}
+        </p>
+        <p className="text-sm text-gray-600">
+          {remainingPercentage}% av din inkomst är ännu inte fördelad
+        </p>
+      </Card>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {categories.map((category) => {
+          const amount = (income * category.percentage) / 100;
+          return (
+            <Card key={category.name} className="p-4 hover:shadow-lg transition-shadow">
+              <h3 className="font-semibold text-lg mb-2">{category.name}</h3>
+              <p className="text-2xl font-bold text-primary mb-2">
+                {formatCurrency(amount)}
               </p>
-            </div>
-          </Card>
-        );
-      })}
+              <p className="text-sm text-gray-600 mb-4">{category.description}</p>
+              <div className="space-y-2">
+                <Slider
+                  defaultValue={[category.percentage]}
+                  max={category.maxPercentage || 100}
+                  min={category.minPercentage || 0}
+                  step={1}
+                  onValueChange={(value) => handleSliderChange(category.name, value)}
+                />
+                <p className="text-sm font-semibold text-gray-500">
+                  {category.percentage}% av inkomsten
+                </p>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 };
