@@ -25,6 +25,8 @@ const Index = () => {
       return;
     }
 
+    // Reset categories to default values when recalculating
+    setCategories(budgetCategories);
     setShowResults(true);
   };
 
