@@ -27,16 +27,12 @@ const BudgetResults = ({ income, categories: initialCategories, onCategoryUpdate
   const remainingAmount = (income * remainingPercentage) / 100;
 
   const handleSliderChange = (categoryName: string, newValue: number[]) => {
-    const updatedCategories = categories.map(cat => {
-      if (cat.name === categoryName) {
-        return { ...cat, percentage: newValue[0] };
-      }
-      return cat;
-    });
-
-    const totalPercentage = updatedCategories.reduce((sum, cat) => sum + cat.percentage, 0);
+    const currentCategory = categories.find(cat => cat.name === categoryName);
+    const otherCategories = categories.filter(cat => cat.name !== categoryName);
+    const otherCategoriesTotal = otherCategories.reduce((sum, cat) => sum + cat.percentage, 0);
     
-    if (totalPercentage > 100) {
+    if (otherCategoriesTotal + newValue[0] > 100) {
+      // Reset to original value and show warning
       toast({
         title: "Varning",
         description: "Total fördelning kan inte överstiga 100%",
@@ -44,6 +40,13 @@ const BudgetResults = ({ income, categories: initialCategories, onCategoryUpdate
       });
       return;
     }
+
+    const updatedCategories = categories.map(cat => {
+      if (cat.name === categoryName) {
+        return { ...cat, percentage: newValue[0] };
+      }
+      return cat;
+    });
 
     setCategories(updatedCategories);
     onCategoryUpdate?.(updatedCategories);
@@ -77,6 +80,7 @@ const BudgetResults = ({ income, categories: initialCategories, onCategoryUpdate
                   max={category.maxPercentage || 100}
                   min={category.minPercentage || 0}
                   step={1}
+                  value={[category.percentage]}
                   onValueChange={(value) => handleSliderChange(category.name, value)}
                 />
                 <p className="text-sm font-semibold text-gray-500">
